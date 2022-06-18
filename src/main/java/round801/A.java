@@ -1,5 +1,7 @@
+package round801;
+
 import java.io.*;
-import java.util.*;
+import java.util.StringTokenizer;
 
 public class A {
 
@@ -15,7 +17,32 @@ public class A {
     }
 
     private static void test(Scanner sc, PrintWriter pw) throws IOException {
+        int r = sc.nextInt();
+        int c = sc.nextInt();
 
+        Pair p = new Pair(-1, -1);
+        long max = Long.MIN_VALUE;
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                long num = sc.nextLong();
+                if (num > max) {
+                    max = num;
+                    p = new Pair(i, j);
+                }
+            }
+        }
+        int res = Math.max(p.x + 1, r - p.x) * Math.max(p.y + 1, c - p.y);
+        pw.println(res);
+    }
+
+    static class Pair {
+        int x;
+        int y;
+
+        public Pair(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
     }
 
     private static class Scanner {
