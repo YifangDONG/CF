@@ -25,102 +25,44 @@ public class C {
                 map[i][j] = sc.nextInt();
             }
         }
-        if (r == 1) {
-            pw.println(sum(map[0]) == 0 ? "YES" : "NO");
-        } else if (c == 1) {
-            pw.println(sumCol(map, 0) == 0 ? "YES" : "NO");
+
+        Pair[][] result = new Pair[r][c];
+        int s = 0;
+        for (int i = 0; i < c; i++) {
+            s += map[0][i];
+            result[0][i] = new Pair(s, s);
+        }
+
+        s = 0;
+        for (int i = 0; i < r; i++) {
+            s += map[i][0];
+            result[i][0] = new Pair(s, s);
+        }
+
+        for (int i = 1; i < r; i++) {
+            for (int j = 1; j < c; j++) {
+                int current = map[i][j];
+                long min = Math.min(result[i - 1][j].first, result[i][j - 1].first);
+                long max = Math.max(result[i - 1][j].second, result[i][j - 1].second);
+                // the possible values in the pos[i][j] is an arithmetic sequence whose common difference is 2
+                result[i][j] = new Pair(min + current, max + current);
+            }
+        }
+        Pair sums = result[r - 1][c - 1];
+        if (sums.first <= 0 && sums.second >= 0 && (r + c - 1) % 2 == 0) {
+            pw.println("YES");
         } else {
-
-            Map<Pair, Set<Integer>> result = new HashMap<>();
-            int s = 0;
-            for (int i = 0; i < c; i++) {
-                s += map[0][i];
-                Pair key = new Pair(0, i);
-                result.put(key, Set.of(s));
-            }
-
-            s = 0;
-            for (int i = 0; i < r; i++) {
-                s += map[i][0];
-                Pair key = new Pair(i, 0);
-                result.put(key, Set.of(s));
-            }
-
-            for (int i = 1; i < r; i++) {
-                for (int j = 1; j < c; j++) {
-                    int current = map[i][j];
-                    Pair key1 = new Pair(i - 1, j);
-                    Pair key2 = new Pair(i, j - 1);
-                    if(!result.containsKey(key1) && !result.containsKey(key2)) {
-                        continue;
-                    }
-                    int max = r - i + c - j;
-                    Set<Integer> values = new HashSet<>();
-                    if(result.containsKey(key1)) {
-                        for(int v : result.get(key1)) {
-                            int newValue = v + current;
-                            if(newValue < max) {
-                                values.add(newValue);
-                            }
-                        }
-                    }
-                    if(result.containsKey(key2)) {
-                        for(int v : result.get(key2)) {
-                            int newValue = v + current;
-                            if(newValue < max) {
-                                values.add(newValue);
-                            }
-                        }
-                    }
-                    if (!values.isEmpty()) {
-                        result.put(new Pair(i, j), values);
-                    }
-                }
-            }
-            Set<Integer> sums = result.get(new Pair(r - 1, c - 1));
-            if (sums == null) {
-                pw.println("NO");
-            } else {
-                pw.println(sums.contains(0) ? "YES" : "NO");
-            }
+            pw.println("NO");
         }
-    }
-
-    static int sumCol(int[][] array, int col) {
-        int res = 0;
-        for (int[] ints : array) {
-            res += ints[col];
-        }
-        return res;
-    }
-
-    static int sum(int[] array) {
-        int res = 0;
-        for (int j : array) {
-            res += j;
-        }
-        return res;
-    }
-
-    private static Pair min(List<Long> piles, boolean even) {
-        long res = Long.MAX_VALUE;
-        int pos = 0;
-        for (int i = even ? 0 : 1; i < piles.size(); i += 2) {
-            if (piles.get(i) < res) {
-                pos = i;
-                res = piles.get(i);
-            }
-        }
-        return new Pair(res, pos);
     }
 
     static class Pair {
-        long x;
-        long y;
+        long first;
+        long second;
 
-        public Pair(long x, long y) {
-            this.x = x;
-            this.y = y;
+        public Pair(long first, long second) {
+            this.first = first;
+            this.second = second;
         }
 
         @Override
@@ -128,12 +70,12 @@ public class C {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Pair pair = (Pair) o;
-            return x == pair.x && y == pair.y;
+            return first == pair.first && second == pair.second;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(x, y);
+            return Objects.hash(first, second);
         }
     }
 
